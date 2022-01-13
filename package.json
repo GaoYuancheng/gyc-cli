@@ -1,15 +1,28 @@
 {
   "name": "gyc-cli",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.2",
+  "description": "a cli to ten template",
   "main": "index.js",
+  "bugs": "https://github.com/GaoYuancheng/gyc-cli/issues",
+  "repository": "https://github.com/GaoYuancheng/gyc-cli",
+  "keywords": [
+    "cli",
+    "template",
+    "node"
+  ],
+  "files": [
+    "index.js",
+    "bin",
+    "utils"
+  ],
   "scripts": {
+    "build": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "gyc": "./index.js"
   },
-  "author": "",
+  "author": "gaoyuancheng",
   "license": "ISC",
   "dependencies": {
     "commander": "^8.3.0",
