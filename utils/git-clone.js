@@ -6,8 +6,8 @@ var shell = require("shelljs");
 const gitClone = async (gitUrl, packageJsonConfig, options = {}) => {
   const { name } = packageJsonConfig;
 
-  if(!gitUrl){
-    throw new Error('gitUrl cannot be empty')
+  if (!gitUrl) {
+    throw new Error("gitUrl cannot be empty");
   }
 
   // 判断是否已经有同名文件夹
@@ -24,15 +24,26 @@ const gitClone = async (gitUrl, packageJsonConfig, options = {}) => {
     shell.rm("-rf", `${name}/.git`);
 
     const packageJson = JSON.parse(fs.readFileSync(`${name}/package.json`));
+    const manifestJson = JSON.parse(fs.readFileSync(`${name}/manifest.json`));
 
     const newPackageJson = {
       ...packageJson,
       ...packageJsonConfig,
     };
 
+    const newManifestJson = {
+      ...manifestJson,
+      name: name,
+    };
+
     fs.writeFileSync(
       `${name}/package.json`,
       JSON.stringify(newPackageJson, null, 2)
+    );
+
+    fs.writeFileSync(
+      `${name}/manifest.json`,
+      JSON.stringify(newManifestJson, null, 2)
     );
 
     console.log("模板下载完成-----------");
