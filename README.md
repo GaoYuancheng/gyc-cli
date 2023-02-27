@@ -5,7 +5,7 @@
 ### 开发
 
 1. pnpm
-2. pnpm link
+2. pnpm link --global
 
 ### 本地开发测试
 
@@ -16,3 +16,7 @@ node index.js test 11
 #### gyc init
 
 选择生成模板
+
+#### gyc test <string>
+
+测试是否正常

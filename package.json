@@ -1,7 +1,7 @@
 {
   "name": "gyc-cli",
   "version": "1.0.2",
-  "description": "a cli to ten template",
+  "description": "a cli to gen template",
   "main": "index.js",
   "bugs": "https://github.com/GaoYuancheng/gyc-cli/issues",
   "repository": "https://github.com/GaoYuancheng/gyc-cli",
