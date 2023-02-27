@@ -6,7 +6,7 @@ const gitClone = require("../../utils/git-clone");
 const gitReposList = [
   {
     templateName: "chrome-extension-template",
-    gitUrl:"https://github.com/GaoYuancheng/chrome-extension-template.git",
+    gitUrl: "https://github.com/GaoYuancheng/chrome-extension-template.git",
   },
 ];
 
@@ -28,15 +28,15 @@ module.exports = async (options) => {
       message: "请选择模板",
       choices: gitReposList.map((item) => item.templateName),
     },
-    
+
     {
       type: "input",
       name: "name",
       message: "请输入项目名称",
       validate: (value) => {
         // 不能为空
-        return !!value
-      }
+        return !!value;
+      },
     },
     {
       type: "input",
@@ -45,10 +45,11 @@ module.exports = async (options) => {
     },
   ]);
 
-  const gitUrl = gitReposList.find(item => templateName === item.templateName)?.gitUrl
-  console.log('gitUrl',gitUrl)
-  gitClone(gitUrl, packageJsonConfig)
-
+  const gitUrl = gitReposList.find(
+    (item) => templateName === item.templateName
+  )?.gitUrl;
+  console.log("gitUrl", gitUrl);
+  gitClone(gitUrl, packageJsonConfig);
 };
 
 // const options = program.opts();

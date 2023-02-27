@@ -1,12 +1,18 @@
 ## gyc-cli
 
-> 全局node工具
-
+> 全局 node 工具
 
 ### 开发
-1. yarn
-2. npm link
-### 目前的命令
-#### gyc init 
-  选择生成模板
 
+1. pnpm
+2. pnpm link
+
+### 本地开发测试
+
+node index.js test 11
+
+### 目前的命令
+
+#### gyc init
+
+选择生成模板
