@@ -1,8 +1,9 @@
 {
   "name": "gyc-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a cli to gen template",
   "main": "index.js",
+  "type": "module",
   "bugs": "https://github.com/GaoYuancheng/gyc-cli/issues",
   "repository": "https://github.com/GaoYuancheng/gyc-cli",
   "keywords": [
@@ -26,6 +27,7 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^8.3.0",
+    "fs-extra": "^11.2.0",
     "inquirer": "^8.2.0",
     "shelljs": "^0.8.5"
   }

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // https://github.com/shelljs/shelljs
-const inquirer = require("inquirer");
-const gitClone = require("../../utils/git-clone");
+
+import inquirer from "inquirer";
+import { gitClone } from "../../utils/gitClone.js";
 
 const gitReposList = [
   {
@@ -10,7 +11,7 @@ const gitReposList = [
   },
 ];
 
-module.exports = async (options) => {
+const init = async (options) => {
   // const { useDefault } = options;
 
   // if (useDefault) {
@@ -56,3 +57,5 @@ module.exports = async (options) => {
 // if(options.foo){
 //   console.log('foo',options)
 // }
+
+export default init;

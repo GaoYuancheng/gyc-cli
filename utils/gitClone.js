@@ -1,9 +1,10 @@
-const fs = require("fs");
-const { exec } = require("child_process");
-var shell = require("shelljs");
+import { exec } from "child_process";
+
+import fs from "fs";
+import fse from "fs-extra";
 
 // 下载仓库到指定目录
-const gitClone = async (gitUrl, packageJsonConfig, options = {}) => {
+export const gitClone = async (gitUrl, packageJsonConfig, options = {}) => {
   const { name } = packageJsonConfig;
 
   if (!gitUrl) {
@@ -21,7 +22,7 @@ const gitClone = async (gitUrl, packageJsonConfig, options = {}) => {
     if (err) console.log("err", err);
 
     // 删除.git 文件
-    shell.rm("-rf", `${name}/.git`);
+    fse.remove(`${name}/.git`);
 
     const packageJson = JSON.parse(fs.readFileSync(`${name}/package.json`));
     const manifestJson = JSON.parse(fs.readFileSync(`${name}/manifest.json`));
@@ -49,5 +50,3 @@ const gitClone = async (gitUrl, packageJsonConfig, options = {}) => {
     console.log("模板下载完成-----------");
   });
 };
-
-module.exports = gitClone;
