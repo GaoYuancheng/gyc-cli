@@ -5,7 +5,11 @@
 ### 开发
 
 1. pnpm
-2. pnpm link --global
+2. pnpm link -g
+
+#### 移除
+
+pnpm uninstall -g gyc-cli
 
 ### 本地开发测试
 
