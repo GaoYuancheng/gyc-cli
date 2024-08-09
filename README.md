@@ -17,6 +17,13 @@ node index.js test 11
 
 选择生成模板
 
+#### gyc g
+
+在 src/pages 目录下生成模板
+
+- curdPage
+- testPage
+
 #### gyc test <string>
 
 测试是否正常

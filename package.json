@@ -1,6 +1,6 @@
 {
   "name": "gyc-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "a cli to gen template",
   "main": "index.js",
   "type": "module",
