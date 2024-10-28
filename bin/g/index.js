@@ -5,15 +5,14 @@ import fse from "fs-extra";
 
 // 当前文件地址
 const dirname = fileURLToPath(import.meta.url);
-
 const templateList = [
   {
     templateName: "测试页面",
-    dirPath: "./template/testPage",
+    dirPath: "../../example/src/template/testPage",
   },
   {
     templateName: "增删改查页面",
-    dirPath: "./template/curdPage",
+    dirPath: "../../example/src/template/curdPage",
   },
 ];
 

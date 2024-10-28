@@ -1,26 +1,31 @@
 import { addNotice, getNoticeDetail } from '../../services';
 import {
   ProForm,
+  ProFormSelect,
   ProFormText,
   ProFormTextArea,
   ProFormUploadButton,
 } from '@ant-design/pro-components';
-import { file } from '@pms/console';
-import { message, Modal, ModalProps } from 'antd';
+// import { file } from '@pms/console';
+import { Form, FormInstance, message, Modal, ModalProps } from 'antd';
 import React, { useEffect } from 'react';
 
-interface Props extends ModalProps {
-  data?: any;
-  visible: any;
-  onSuccess: () => void;
-}
+const formatDataOnSubmit = (data: any) => {
+  const { attachments, ...rest } = data;
+  return {
+    ...rest,
+    attachments: (attachments || [])
+      .map((item: any) => item.response?.fileUuid)
+      .join(','),
+  };
+};
 
-const formatDataOnInit = (data) => {
+const formatDataOnInit = (data: any) => {
   const { attachmentList = [], ...rest } = data;
 
   return {
     ...rest,
-    attachments: attachmentList.map((item) => ({
+    attachments: attachmentList.map((item: any) => ({
       name: item.fileName,
       url: item.fileUrl,
       response: {
@@ -31,64 +36,57 @@ const formatDataOnInit = (data) => {
   };
 };
 
-const formatDataOnSubmit = (data) => {
-  const { attachments, ...rest } = data;
-  return {
-    ...rest,
-    attachments: attachments.map((item) => item.response?.fileUuid).join(','),
-  };
-};
+interface Props extends ModalProps {
+  data?: any;
+  data1?: any;
+  data2: any;
+  onSuccess: () => void;
+}
 
-const EditModal: React.FC<Props> = ({ data, onSuccess, ...rest }) => {
-  const [form] = ProForm.useForm();
+const EditModal: React.FC<Props> = ({
+  data = {},
+  onSuccess,
+  ...modalProps
+}) => {
+  const isEdit = data?.id;
+  const { open } = modalProps;
+  const [form] = Form.useForm();
 
-  const { onCancel, visible } = rest;
   const onOk = async () => {
     const values = await form.validateFields();
-
     const params = formatDataOnSubmit(values);
-
-    if (data?.noticeId) {
-      // TODO: 编辑
-      return;
+    if (data?.id) {
+      console.log('编辑', params);
     } else {
-      // TODO: 新增
+      // 新建
       await addNotice(params);
     }
-
-    console.log(values);
-    message.success('操作成功');
     onSuccess();
   };
 
   const init = async () => {
     // TODO: 详情
     const res = await getNoticeDetail({
-      noticeId: data?.noticeId,
+      id: data?.id,
     });
-    console.log('res', res);
     form.setFieldsValue(formatDataOnInit(res?.data));
   };
 
   useEffect(() => {
-    if (!visible) return;
-    if (data?.noticeId) {
+    if (!open) return;
+    if (isEdit) {
       // 编辑回填
       init();
     }
-  }, [visible]);
+  }, [open]);
 
   return (
-    <Modal
-      onOk={onOk}
-      title="编辑公告"
-      afterClose={() => {
-        form.resetFields();
-      }}
-      {...rest}
-    >
+    <Modal onOk={onOk} title={isEdit ? '编辑' : '新建'} {...modalProps}>
       <ProForm
         form={form}
+        autoFocus={false}
+        // 默认为true 需要置为 false
+        autoFocusFirstInput={false}
         labelCol={{
           span: 4,
         }}
@@ -127,10 +125,10 @@ const EditModal: React.FC<Props> = ({ data, onSuccess, ...rest }) => {
           listType="picture-card"
           fieldProps={{
             customRequest: (parameters) => {
-              file.upload({
-                ...parameters,
-                onUploadAfter: (...rest) => {},
-              });
+              // file.upload({
+              //   ...parameters,
+              //   onUploadAfter: (...rest) => {},
+              // });
             },
           }}
         />

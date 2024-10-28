@@ -1,22 +1,23 @@
-import React, { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Button, message, Popconfirm, Space } from 'antd';
 import Styles from './index.less';
 import { deleteNotice, getNoticePageList } from './services';
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
+import useModal from './components/useModal';
 import EditModal from './components/EditModal';
 
-const NoticeSetting = () => {
-  const [editModalInfo, setEditModalInfo] = useState<{
-    visible: boolean;
-    data?: any;
-  }>({
-    visible: false,
-    data: {},
-  });
-
+const CurdPage = () => {
   const actionRef = useRef<ActionType>();
 
-  const getList = async (params) => {
+  const editModal = useModal(EditModal, {
+    onSuccess: () => {
+      message.success('操作成功');
+      editModal.close();
+      actionRef.current?.reload();
+    },
+  });
+
+  const getList = async (params: any) => {
     const { current, pageSize, ...rest } = params;
 
     const resParams = {
@@ -44,13 +45,13 @@ const NoticeSetting = () => {
     },
     {
       dataIndex: 'title',
-      title: '公告名称',
+      title: 'title',
       ellipsis: true,
       width: 200,
     },
     {
       dataIndex: 'content',
-      title: '公告内容',
+      title: 'content',
       ellipsis: true,
       width: 200,
       hideInSearch: true,
@@ -72,14 +73,13 @@ const NoticeSetting = () => {
     {
       dataIndex: 'operate',
       title: '操作',
-      width: 100,
+      width: 60,
       hideInSearch: true,
       render: (text, record) => (
         <Space>
           <a
             onClick={() => {
-              setEditModalInfo({
-                visible: true,
+              editModal.open({
                 data: record,
               });
             }}
@@ -88,8 +88,10 @@ const NoticeSetting = () => {
           </a>
           <Popconfirm
             title="确定删除吗？"
-            onConfirm={() => {
-              deleteRecord(record);
+            onConfirm={async () => {
+              await deleteNotice({ id: record?.id });
+              message.success('操作成功');
+              actionRef?.current?.reload();
             }}
           >
             <a style={{ color: 'red' }}>删除</a>
@@ -98,13 +100,6 @@ const NoticeSetting = () => {
       ),
     },
   ];
-
-  // 删除数据
-  const deleteRecord = async (record) => {
-    await deleteNotice({ noticeId: record?.noticeId });
-    message.success('操作成功');
-    actionRef?.current?.reload();
-  };
 
   return (
     <div className={Styles.NoticeSetting}>
@@ -126,9 +121,7 @@ const NoticeSetting = () => {
               type="primary"
               key="primary"
               onClick={() => {
-                setEditModalInfo({
-                  visible: true,
-                });
+                editModal.open({});
               }}
             >
               添加
@@ -138,27 +131,16 @@ const NoticeSetting = () => {
         columns={columns}
       />
 
-      <EditModal
-        {...editModalInfo}
-        onCancel={() => {
-          setEditModalInfo({
-            visible: false,
-          });
-        }}
-        onSuccess={() => {
-          setEditModalInfo({
-            visible: false,
-          });
-          actionRef.current?.reload();
-        }}
-      ></EditModal>
+      {editModal.modalDom}
     </div>
   );
 };
 
-NoticeSetting.menuName = '公告设置';
-NoticeSetting.order = 1;
+CurdPage.menuName = '示例页面';
+// 1企业 2分公司 3项目
+CurdPage.organizationType = [3];
+CurdPage.order = 1;
 // 在二级的menu菜单栏 需要显示自己, 默认是false，显示，这里只是进行示范
-NoticeSetting.hideRenderChild = true;
+CurdPage.hideRenderChild = true;
 // NoticeSetting.hideMenuParentComponent = true;
-export default NoticeSetting;
+export default CurdPage;
