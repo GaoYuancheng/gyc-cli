@@ -8,7 +8,7 @@ import {
 } from '@ant-design/pro-components';
 // import { file } from '@pms/console';
 import { Form, FormInstance, message, Modal, ModalProps } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const formatDataOnSubmit = (data: any) => {
   const { attachments, ...rest } = data;
@@ -51,15 +51,19 @@ const EditModal: React.FC<Props> = ({
   const isEdit = data?.id;
   const { open } = modalProps;
   const [form] = Form.useForm();
+  const [okBtnLoading, setOkBtnLoading] = useState(false);
 
   const onOk = async () => {
     const values = await form.validateFields();
     const params = formatDataOnSubmit(values);
+    setOkBtnLoading(true);
     if (data?.id) {
       console.log('编辑', params);
     } else {
       // 新建
-      await addNotice(params);
+      await addNotice(params).finally(() => {
+        setOkBtnLoading(false);
+      });
     }
     onSuccess();
   };
@@ -81,7 +85,14 @@ const EditModal: React.FC<Props> = ({
   }, [open]);
 
   return (
-    <Modal onOk={onOk} title={isEdit ? '编辑' : '新建'} {...modalProps}>
+    <Modal
+      okButtonProps={{
+        loading: okBtnLoading,
+      }}
+      onOk={onOk}
+      title={isEdit ? '编辑' : '新建'}
+      {...modalProps}
+    >
       <ProForm
         form={form}
         autoFocus={false}

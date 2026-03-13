@@ -24,7 +24,7 @@ const useModal = <P extends React.ElementType>(
   type ModalOptions = Partial<ModalProps & React.ComponentProps<P>>;
 
   type UseModalReturn = {
-    open: (params: ModalOptions) => void;
+    open: (params?: ModalOptions) => void;
     close: () => void;
     modalDom: React.ReactNode;
     modalOptions: ModalOptions;

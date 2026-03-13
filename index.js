@@ -13,7 +13,7 @@ const dirname = fileURLToPath(import.meta.url);
 const packageJson = JSON.parse(
   fs.readFileSync(path.resolve(dirname, "../package.json"), {
     encoding: "utf-8",
-  })
+  }),
 );
 
 program.version(packageJson.version, "-v,--version");
@@ -27,6 +27,16 @@ program.command("init").action(async (options) => {
 program.command("g").action(async (options) => {
   g(options);
 });
+
+// 添加技能模板
+import addSkill from "./bin/skill/add.js";
+
+const skillCommand = program.command("skill");
+skillCommand
+  .command("add [skillName] [editorName] [addType]")
+  .action(async (skillName, editorName, addType, options) => {
+    addSkill(skillName, editorName, addType, options);
+  });
 
 // 测试
 program.command("test <testString>").action(async (testString, options) => {
