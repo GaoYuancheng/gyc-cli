@@ -87,7 +87,7 @@ const add = async (skillName, editorName, addType, options) => {
     // 确定目标目录
     let targetDir;
     // 使用项目根目录作为基准目录
-    const projectRoot = path.resolve(process.env.pwd);
+    const projectRoot = process.env.pwd || process.env.PWD;
     if (selectedAddType === "local") {
       targetDir = path.resolve(projectRoot, `.${selectedEditorName}`);
     } else {
