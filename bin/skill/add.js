@@ -19,6 +19,14 @@ const skillNameUrlMap = {
     gitUrl: "https://github.com/anthropics/skills.git",
     dir: "skills/pdf",
   },
+  "panshi-skill": {
+    gitUrl: "https://github.com/GaoYuancheng/gyc-skill.git",
+    dir: "skills/panshi-skill",
+  },
+  "voyagejs-skill": {
+    gitUrl: "https://github.com/GaoYuancheng/gyc-skill.git",
+    dir: "skills/voyagejs-skill",
+  },
 };
 
 /**
@@ -34,27 +42,35 @@ const add = async (skillName, editorName, addType, options) => {
     const skillOptions = Object.keys(skillNameUrlMap);
 
     // 如果没有提供 skillName，提示用户选择
-    let selectedSkillName = skillName;
-    if (!selectedSkillName) {
-      const { skill } = await inquirer.prompt([
+    let selectedSkillNames = [];
+    if (!skillName) {
+      const { skills } = await inquirer.prompt([
         {
-          type: "list",
-          name: "skill",
+          type: "checkbox",
+          name: "skills",
           message: "请选择技能",
           choices: skillOptions,
+          validate: (answer) => {
+            if (answer.length < 1) {
+              return "至少选择一个技能";
+            }
+            return true;
+          },
         },
       ]);
-      selectedSkillName = skill;
+      selectedSkillNames = skills;
+    } else {
+      // 如果提供了 skillName，将其作为单个技能处理
+      selectedSkillNames = [skillName];
     }
 
-    // 检查技能是否存在于 skillNameUrlMap 中
-    if (!skillNameUrlMap[selectedSkillName]) {
-      console.log(`❌ 技能 "${selectedSkillName}" 不存在`);
-      return;
+    // 检查所有技能是否存在于 skillNameUrlMap 中
+    for (const skillName of selectedSkillNames) {
+      if (!skillNameUrlMap[skillName]) {
+        console.log(`❌ 技能 "${skillName}" 不存在`);
+        return;
+      }
     }
-
-    // 获取技能的 GitHub 链接
-    const { gitUrl, dir } = skillNameUrlMap[selectedSkillName];
 
     // 如果没有提供 editorName，提示用户选择
     let selectedEditorName = editorName;
@@ -98,45 +114,54 @@ const add = async (skillName, editorName, addType, options) => {
     // 确保目标目录存在
     await fs.ensureDir(targetDir);
 
-    try {
-      gitClonePartialDir({
-        repoUrl: gitUrl,
-        targetDir,
-        includeDirs: [dir],
-        branch: "main",
-        shallow: true,
-      });
+    // 处理每个选中的技能
+    for (const selectedSkillName of selectedSkillNames) {
+      // 获取技能的 GitHub 链接和目录
+      const { gitUrl, dir } = skillNameUrlMap[selectedSkillName];
 
-      // 移动技能目录到正确的位置
-      const sourceSkillPath = path.join(targetDir, dir);
-      const destSkillPath = path.join(targetDir, selectedSkillName);
+      try {
+        gitClonePartialDir({
+          repoUrl: gitUrl,
+          targetDir,
+          includeDirs: [dir],
+          branch: "main",
+          shallow: true,
+        });
 
-      if (await fs.pathExists(sourceSkillPath)) {
-        // 如果目标目录已存在，先删除
-        if (await fs.pathExists(destSkillPath)) {
-          await fs.remove(destSkillPath);
+        // 移动技能目录到正确的位置
+        const sourceSkillPath = path.join(targetDir, dir);
+        const destSkillPath = path.join(targetDir, selectedSkillName);
+
+        if (await fs.pathExists(sourceSkillPath)) {
+          // 如果目标目录已存在，先删除
+          if (await fs.pathExists(destSkillPath)) {
+            await fs.remove(destSkillPath);
+          }
+
+          // 移动目录
+          await fs.rename(sourceSkillPath, destSkillPath);
+
+          // 清理空的 skills 目录
+          const skillsDir = path.join(targetDir, "skills");
+          if (
+            (await fs.pathExists(skillsDir)) &&
+            (await fs.readdir(skillsDir)).length === 0
+          ) {
+            await fs.remove(skillsDir);
+          }
+
+          console.log(
+            `🎉 技能 "${selectedSkillName}" 已成功添加到 ${targetDir} 目录`,
+          );
+        } else {
+          console.log(`❌ 技能 "${selectedSkillName}" 在仓库中不存在`);
         }
-
-        // 移动目录
-        await fs.rename(sourceSkillPath, destSkillPath);
-
-        // 清理空的 skills 目录
-        const skillsDir = path.join(targetDir, "skills");
-        if (
-          (await fs.pathExists(skillsDir)) &&
-          (await fs.readdir(skillsDir)).length === 0
-        ) {
-          await fs.remove(skillsDir);
-        }
-
-        console.log(
-          `🎉 技能 "${selectedSkillName}" 已成功添加到 ${targetDir} 目录`,
+      } catch (error) {
+        console.error(
+          `❌ 克隆技能 "${selectedSkillName}" 失败:`,
+          error.message,
         );
-      } else {
-        console.log(`❌ 技能 "${selectedSkillName}" 在仓库中不存在`);
       }
-    } catch (error) {
-      console.error("❌ 克隆技能失败:", error.message);
     }
   } catch (error) {
     console.error("❌ 添加技能失败:", error.message);
